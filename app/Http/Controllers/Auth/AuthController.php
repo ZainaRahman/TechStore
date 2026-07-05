@@ -8,6 +8,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -20,19 +21,31 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $validated = $request->validated();
+        $hashedPassword = Hash::make($validated['password']);
 
-        $user = User::create([
-            'full_name'     => $validated['full_name'],
-            'email'         => $validated['email'],
-            'phone'         => $validated['phone'] ?? null,
-            'address'       => $validated['address'] ?? null,
-            'city'          => $validated['city'] ?? null,
-            'password_hash' => Hash::make($validated['password']),
-        ]);
+        try {
+            DB::insert(
+                'INSERT INTO "USERS" ("FULL_NAME", "EMAIL", "PHONE", "PASSWORD_HASH", "ADDRESS", "CITY")
+                 VALUES (?, ?, ?, ?, ?, ?)',
+                [
+                    $validated['full_name'],
+                    $validated['email'],
+                    $validated['phone'] ?? null,
+                    $hashedPassword,
+                    $validated['address'] ?? null,
+                    $validated['city'] ?? null,
+                ]
+            );
+        } catch (\Illuminate\Database\QueryException $e) {
+            return back()->withErrors([
+                'email' => 'Registration failed. That email may already be in use.',
+            ])->withInput();
+        }
 
-        Auth::login($user);
+        $row = DB::selectOne('SELECT * FROM "USERS" WHERE "EMAIL" = ?', [$validated['email']]);
+        Auth::login($this->hydrateUser($row));
 
-        return redirect()->route('dashboard')->with('status', 'Registration successful.');
+        return redirect()->route('landing')->with('status', 'Registration successful.');
     }
 
     public function showLogin()
@@ -44,15 +57,18 @@ class AuthController extends Controller
     {
         $credentials = $request->validated();
 
-        // Auth::attempt() compares 'password' input against getAuthPassword()
-        if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'));
+        $row = DB::selectOne('SELECT * FROM "USERS" WHERE "EMAIL" = ?', [$credentials['email']]);
+
+        if (!$row || !Hash::check($credentials['password'], $row->password_hash)) {
+            return back()->withErrors([
+                'email' => 'These credentials do not match our records.',
+            ])->onlyInput('email');
         }
 
-        return back()->withErrors([
-            'email' => 'These credentials do not match our records.',
-        ])->onlyInput('email');
+        Auth::login($this->hydrateUser($row));
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('landing'));
     }
 
     public function logout(Request $request)
@@ -62,5 +78,21 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    private function hydrateUser($row)
+    {
+        $user = new User();
+        $user->setRawAttributes([
+            'user_id'       => $row->user_id,
+            'full_name'     => $row->full_name,
+            'email'         => $row->email,
+            'phone'         => $row->phone,
+            'password_hash' => $row->password_hash,
+            'address'       => $row->address,
+            'city'          => $row->city,
+        ], true);
+
+        return $user;
     }
 }
