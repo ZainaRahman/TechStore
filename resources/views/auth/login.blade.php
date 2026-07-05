@@ -5,7 +5,10 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
-    <h1>Login</h1>
+    <div class="auth-wrapper">
+        <div class="card auth-card">
+            <h1>Welcome back</h1>
+            <p class="card-subtext">Login to your TechStore account</p>
 
     @if (session('status'))
         <div class="status-box">{{ session('status') }}</div>
