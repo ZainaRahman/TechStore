@@ -13,9 +13,30 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    public function showLoginChoice()
+    {
+        return view('auth.login-choice');
+    }
+
     public function showRegister()
     {
         return view('auth.register');
+    }
+
+    public function showUserLogin()
+    {
+        return view('auth.login');
+    }
+
+    public function chooseLogin(Request $request)
+    {
+        $validated = $request->validate([
+            'role' => ['required', 'in:user,admin'],
+        ]);
+
+        return $validated['role'] === 'admin'
+            ? redirect()->route('admin.login')
+            : redirect()->route('user.login');
     }
 
     public function register(RegisterRequest $request)
@@ -46,11 +67,6 @@ class AuthController extends Controller
         Auth::login($this->hydrateUser($row));
 
         return redirect()->route('landing')->with('status', 'Registration successful.');
-    }
-
-    public function showLogin()
-    {
-        return view('auth.login');
     }
 
     public function login(LoginRequest $request)

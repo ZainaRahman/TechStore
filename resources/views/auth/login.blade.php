@@ -5,8 +5,11 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
-    <div class="auth-wrapper">
-        <div class="card auth-card">
+    <div class="auth-wrapper auth-shell-glass">
+        <div class="glass-orb glass-orb-one"></div>
+        <div class="glass-orb glass-orb-two"></div>
+
+        <div class="card auth-card glass-card">
             <h1>Welcome back</h1>
             <p class="card-subtext">Login to your TechStore account</p>
 
@@ -24,7 +27,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('user.login.submit') }}">
         @csrf
 
         <div class="field">
