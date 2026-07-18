@@ -38,6 +38,7 @@
 
                 <button type="submit">Login</button>
             </form>
+            <div class="back"><a href="{{ route('landing') }}">Back to home</a></div>
         </div>
     </div>
 </body>

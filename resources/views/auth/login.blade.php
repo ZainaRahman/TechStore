@@ -44,5 +44,6 @@
     </form>
 
     <p class="helper-link">No account? <a href="{{ route('register') }}">Register</a></p>
+    <div class="back"><a href="{{ route('landing') }}">Back to home</a></div>
 </body>
 </html>

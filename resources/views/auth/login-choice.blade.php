@@ -6,32 +6,7 @@
 </head>
 <body>
     <div class="auth-wrapper auth-shell-glass">
-        <div class="glass-orb glass-orb-one"></div>
-        <div class="glass-orb glass-orb-two"></div>
-
         <div class="auth-split">
-            <section class="auth-hero-panel">
-                <div>
-                    <p class="auth-kicker">TechStore access</p>
-                    <h1>Login with a clean glass view.</h1>
-                    <p>Choose your role once, then continue to the right login screen without hunting for separate URLs.</p>
-                </div>
-
-                <div class="auth-hero-points">
-                    <div class="auth-hero-point">
-                        <div>
-                            <strong>Customer access</strong>
-                            <span>Browse products, track orders, and leave reviews.</span>
-                        </div>
-                    </div>
-                    <div class="auth-hero-point">
-                        <div>
-                            <strong>Admin access</strong>
-                            <span>Manage products, orders, reviews, and inventory.</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             <div class="auth-card-shell">
                 <div class="card auth-card glass-card">
@@ -60,14 +35,9 @@
                                 <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
                             </select>
                         </div>
-
                         <button type="submit">Continue</button>
+                        <div class="back"><a href="{{ route('landing') }}">Back to home</a></div>
                     </form>
-
-                    <div class="login-choice-links">
-                        <a href="{{ route('user.login') }}">Customer login</a>
-                        <a href="{{ route('admin.login') }}">Admin login</a>
-                    </div>
                 </div>
             </div>
         </div>

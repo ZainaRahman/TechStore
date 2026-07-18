@@ -65,5 +65,6 @@
     </form>
 
     <p class="helper-link">Already have an account? <a href="{{ route('login') }}">Login</a></p>
+    <div class="back"><a href="{{ route('landing') }}">Back to home</a></div>
 </body>
 </html>
